@@ -6,39 +6,44 @@ import { Contact, Mail, Pen } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Label } from './ui/label'
 import AppliedJobTable from './AppliedJobTable'
+import UpdateProfileDialog from './UpdateProfileDialog'
+import { useSelector } from 'react-redux'
+import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
 
 
 
-const skills = ["HTML", "CSS", "JS", "REACT.JS"];
+// const skills = ["HTML", "CSS", "JS", "REACT.JS"];
 const isResume = true;
 const Profile = () => {
-    // const [open,setOpen] =  useState(false); <<----------continue from here 6:40:21----------------->>
+    useGetAppliedJobs();
+    const [open,setOpen]=useState(false);
+    const {user}=useSelector(store=>store.auth);
     
     return (
-        <div>
+        <div >
             <Navbar />
             <div className='max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl my-5 p-8'>
                 <div className='flex justify-between'>
                     <div className='flex items-center gap-4'>
-                        <Avatar className="h-24 w-24">
-                            <AvatarImage src="https://th.bing.com/th/id/R.0fa3fe04edf6c0202970f2088edea9e7?rik=joOK76LOMJlBPw&riu=http%3a%2f%2fpluspng.com%2fimg-png%2fgoogle-logo-png-open-2000.png&ehk=0PJJlqaIxYmJ9eOIp9mYVPA4KwkGo5Zob552JPltDMw%3d&risl=&pid=ImgRaw&r=0" alt="profile" />
+                        <Avatar className="h-15 w-15">
+                            <AvatarImage src="https://tse3.mm.bing.net/th/id/OIP.ZwgJv5gztOn2jHbTWgIWngHaHa?w=550&h=550&rs=1&pid=ImgDetMain&o=7&rm=3" alt="profile" />
 
                         </Avatar>
                         <div>
-                            <h1 className='font-medium text-xl'>Abhishek</h1>
-                            <p>SDE-1</p>
+                            <h1 className='font-medium text-xl'>{user?.fullname}</h1>
+                            <p>{user?.profile?.bio}</p>
                         </div>
                     </div>
-                    <Button className="text-right" variant={"outline"}><Pen /></Button>
+                    <Button onClick={()=>setOpen(true)}className="text-right" variant={"outline"}><Pen /></Button>
                 </div>
                 <div className='my-5'>
                     <div className='flex items-center gap-3 my-2'>
                         <Mail />
-                        <span>abhishekk57078@gmail.com</span>
+                        <span>{user?.email}</span>
                     </div>
                     <div className='flex items-center gap-3 my-2'>
                         <Contact />
-                        <span>+91-7876707617</span>
+                        <span>{user?.phoneNumber}</span>
                     </div>
                 </div>
                 <div className='my-5 '>
@@ -46,7 +51,7 @@ const Profile = () => {
                     <div className='flex items-center gap-1'>
 
                         {
-                            skills.length != 0 ? skills.map((item, index) => <Badge key={index} className={"bg-purple-500 text-white"}>{item}</Badge>) : <span>NA</span>
+                            user?.profile?.skills.length != 0 ? user?.profile?.skills.map((item, index) => <Badge key={index} className={"bg-[#4c5de3] text-white rounded-3xl"}>{item}</Badge>) : <span>NA</span>
                         }
                     </div>
 
@@ -56,7 +61,7 @@ const Profile = () => {
                         Resume
                     </Label>
                     {
-                        isResume ? <a target='blank' href='https://youtube.com/@youtube' className='text-blue-500 hover:underline cursor-pointer '>Resume Link</a> : <span>NA</span>
+                        isResume ? <a target='blank' href={user?.profile?.resume} className='text-blue-500 hover:underline cursor-pointer '>{user?.profile?.resumeOriginalName}</a> : <span>NA</span>
                     }
 
                 </div>
@@ -70,6 +75,8 @@ const Profile = () => {
                 {/* Applied Job Table   */}
                 <AppliedJobTable />
             </div>
+
+            <UpdateProfileDialog open={open} setOpen={setOpen}/>
 
         </div>
     )
